@@ -5,39 +5,44 @@ using UnityEngine;
 [RequireComponent(typeof(Light))]
 public class LightSource : MonoBehaviour
 {
-    public Light lightData { get; private set; }
+    public Light LightData { get; private set; }
     public float hypotheticalDistanceAwayIfDirectionalLight = float.MaxValue;
+    public MeshRenderer visual;
+    public Material onMaterial;
+    public Material offMaterial;
 
     private void Awake()
     {
-        lightData = GetComponent<Light>();
+        LightData = GetComponent<Light>();
     }
-
     /*
-    // Start is called before the first frame update
-    void Start()
+    private void OnEnable()
     {
-        
+        LightData.enabled = true;
+        visual.material = onMaterial;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDisable()
     {
-        
+        LightData.enabled = false;
+        visual.material = offMaterial;
     }
     */
-
-
     public float HowMuchLightIsHittingThing(Collider[] collidersInThing)
     {
+        if (LightData.enabled == false)
+        {
+            return 0;
+        }
+        
         Bounds boundsOfThing = TotalColliderBounds(collidersInThing);
 
         #region Angle check (if spot light)
         // If the light is a spotlight, make sure it is actually inside the angle. If so, proceed to other checks
-        if (lightData.type == LightType.Spot)
+        if (LightData.type == LightType.Spot)
         {
             // Checks if the object is outside the angle
-            if (Vector3.Angle(transform.forward, boundsOfThing.center - transform.position) > (lightData.spotAngle / 2))
+            if (Vector3.Angle(transform.forward, boundsOfThing.center - transform.position) > (LightData.spotAngle / 2))
             {
                 // If so, object is not in light
                 return 0;
@@ -49,8 +54,8 @@ public class LightSource : MonoBehaviour
 
         // line of sight check
         Vector3 origin = transform.position;
-        float range = lightData.range;
-        if (lightData.type == LightType.Directional)
+        float range = LightData.range;
+        if (LightData.type == LightType.Directional)
         {
             // Since a directional light has no functional position, only a direction, the 'origin' is a new point far away opposite its direction
             origin = boundsOfThing.center + (-transform.forward * hypotheticalDistanceAwayIfDirectionalLight);
@@ -61,7 +66,7 @@ public class LightSource : MonoBehaviour
 
         // Performs a line of sight check. Since the range is set to the light's range, this pulls double duty as a range check
         RaycastHit lineOfSightCheck;
-        if (Physics.Raycast(origin, direction, out lineOfSightCheck, range, lightData.cullingMask))
+        if (Physics.Raycast(origin, direction, out lineOfSightCheck, range, LightData.cullingMask))
         {
             for (int i = 0; i < collidersInThing.Length; i++)
             {
@@ -71,7 +76,7 @@ public class LightSource : MonoBehaviour
                     // Collider is within range and not behind cover. 
                     // If the angle check did not return false, this means the 
                     float percentage = 1 / range * lineOfSightCheck.distance;
-                    return lightData.intensity * percentage;
+                    return LightData.intensity * percentage;
                 }
             }
         }
@@ -81,20 +86,19 @@ public class LightSource : MonoBehaviour
         return 0;
     }
 
-
+    /// <summary>
+    /// Returns a combined bounds covering the whole object. If array is empty, an empty bounds is returned
+    /// </summary>
+    /// <param name="colliders"></param>
+    /// <returns></returns>
     public static Bounds TotalColliderBounds(Collider[] colliders)
     {
-        if (colliders.Length == 1)
-        {
-            return colliders[0].bounds;
-        }
-        if (colliders.Length <= 0)
+        if (colliders == null || colliders.Length <= 0)
         {
             return new Bounds();
         }
 
         // Do actual check
-
         // Get the collider of the first hitbox in the list, and store its bounds.
         Bounds totalBounds = colliders[0].bounds;
         // A standard for loop, skips zero because the first one is automatically assigned
@@ -107,5 +111,10 @@ public class LightSource : MonoBehaviour
         }
 
         return totalBounds;
+    }
+
+    public void KillPlayer(Player p)
+    {
+        p.Health.Damage(p.Health.max * 2);
     }
 }

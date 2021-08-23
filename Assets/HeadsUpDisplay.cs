@@ -5,35 +5,49 @@ using UnityEngine.UI;
 
 public class HeadsUpDisplay : MonoBehaviour
 {
-
+    [Header("Health")]
     public Health health;
     public Image healthMeter;
     public Text healthCounter;
     public Text lifeCounter;
 
+    [Header("Interaction")]
+    public RectTransform interactWindow;
+    public Text interactableName;
+    public Text prompt;
 
-
-    // Start is called before the first frame update
-    void Start()
+    public void Refresh()
     {
-        UpdateHealthMeter();
+        RefreshHealthMeter();
+        RefreshInteractionWindow(null);
+        
     }
 
-    public void UpdateHealthMeter()
+    public void RefreshHealthMeter()
     {
-        healthCounter.text = health.current.ToString();
         healthMeter.fillAmount = health.current / health.max;
+        healthCounter.text = health.current.ToString();
         lifeCounter.text = health.lives.ToString();
     }
     
-    
-    
-    
-    
-
-    // Update is called once per frame
-    void Update()
+    public void RefreshInteractionWindow(Interactable i)
     {
-        
+        interactWindow.gameObject.SetActive(i != null);
+        if (i != null)
+        {
+            interactableName.text = i.name;
+            if (i.IsInteractable == true)
+            {
+                prompt.text = i.prompt;
+            }
+            else
+            {
+                prompt.text = i.deniedMessage;
+            }
+            
+        }
     }
+    
+    
+    
 }

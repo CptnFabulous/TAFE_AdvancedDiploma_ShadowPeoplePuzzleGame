@@ -30,6 +30,14 @@ public class PlayerAnimationController : MonoBehaviour
     */
     private void LateUpdate()
     {
-        controller.SetBool("Is grounded", movement.IsGrounded);
+        Vector3 moveValues = movement.transform.rotation * movement.MovementValues;
+        if (moveValues.magnitude > 0)
+        {
+            transform.LookAt(movement.transform.position + moveValues);
+            //Debug.DrawRay(transform.position + transform.up, moveValues * 2, Color.green);
+        }
+
+        controller.SetBool("Is grounded", movement.GroundingData.collider != null);
+        controller.SetFloat("Movement speed", moveValues.magnitude);
     }
 }

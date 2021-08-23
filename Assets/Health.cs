@@ -5,6 +5,8 @@ using UnityEngine.Events;
 
 public class Health : MonoBehaviour
 {
+    public Player player { get; set; }
+    
     public int current = 10;
     public int max = 10;
     public int lives = 3;
@@ -16,6 +18,7 @@ public class Health : MonoBehaviour
 
     private void Awake()
     {
+        player = GetComponent<Player>();
         Hitboxes = GetComponentsInChildren<Collider>(false);
     }
 
@@ -37,15 +40,36 @@ public class Health : MonoBehaviour
     {
         damageTimer += Time.deltaTime;
         // Divides time to get a 
+        
+
+        while(damageTimer >= 1 / damagePerSecond)
+        {
+            Damage(1);
+            damageTimer -= 1 / damagePerSecond;
+        }
+        
+        /*
         if (damageTimer >= 1 / damagePerSecond)
         {
             damageTimer = 0;
-            Damage(1);
+            current -= 1;
         }
+        */
     }
 
     public void Die()
     {
         onDie.Invoke();
+
+        if (lives > 0)
+        {
+            lives -= 1;
+            SpawnPoint.Current.Spawn(player);
+        }
+        else
+        {
+            LevelData.Current.FailLevel();
+        }
     }
+
 }
