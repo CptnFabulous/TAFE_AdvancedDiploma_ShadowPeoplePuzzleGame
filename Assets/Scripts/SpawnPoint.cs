@@ -4,9 +4,19 @@ using UnityEngine;
 
 public class SpawnPoint : MonoBehaviour
 {
-    public Player prefab;
+    public Player playerPrefab;
 
-    public void Spawn(Player playerRespawning)
+    public void SpawnPlayer()
+    {
+        Player p = Player.Current;
+        if (p == null)
+        {
+            p = Instantiate(playerPrefab);
+        }
+        Respawn(p);
+    }
+
+    public void Respawn(Player playerRespawning)
     {
         Debug.Log(playerRespawning);
         playerRespawning.transform.position = transform.position;

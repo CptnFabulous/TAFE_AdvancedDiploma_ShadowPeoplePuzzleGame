@@ -10,7 +10,22 @@ public class Player : MonoBehaviour
 
     public HeadsUpDisplay hud;
     public InteractFunction interaction;
-    
+
+    public static Player Current
+    {
+        get
+        {
+            return FindObjectOfType<Player>();
+        }
+    }
+
+    public static Player[] AllCurrent
+    {
+        get
+        {
+            return FindObjectsOfType<Player>();
+        }
+    }
 
     private void Awake()
     {

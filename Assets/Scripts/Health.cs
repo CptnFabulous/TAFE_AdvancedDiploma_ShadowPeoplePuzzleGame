@@ -64,7 +64,7 @@ public class Health : MonoBehaviour
         if (lives > 0)
         {
             lives -= 1;
-            SpawnPoint.Current.Spawn(player);
+            SpawnPoint.Current.Respawn(player);
         }
         else
         {

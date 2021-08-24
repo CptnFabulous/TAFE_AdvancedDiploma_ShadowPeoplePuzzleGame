@@ -20,18 +20,33 @@ public class LevelData : MonoBehaviour
 
     public int startingLives = 1;
     public int optimalLivesLeft = 0;
-    public Canvas winScreen;
-    public Canvas failScreen;
-    public string levelNameForRespawning;
+    public string currentLevelNameForRespawning;
+    public string nextLevel;
+
+
+    private void Start()
+    {
+        // Set up level
+        SpawnPoint.Current.SpawnPlayer();
+        Player.Current.Health.lives = startingLives;
+    }
 
     public void WinLevel()
     {
-
+        Player[] playersInScene = FindObjectsOfType<Player>();
+        foreach(Player p in playersInScene)
+        {
+            p.PauseHandler.WinGame();
+        }
     }
 
     public void FailLevel()
     {
-
+        Player[] playersInScene = FindObjectsOfType<Player>();
+        foreach (Player p in playersInScene)
+        {
+            p.PauseHandler.FailGame();
+        }
     }
 
     

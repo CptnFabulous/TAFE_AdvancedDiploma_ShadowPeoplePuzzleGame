@@ -6,28 +6,30 @@ using UnityEngine;
 public class LightSource : MonoBehaviour
 {
     public Light LightData { get; private set; }
-    public float hypotheticalDistanceAwayIfDirectionalLight = float.MaxValue;
     public MeshRenderer visual;
     public Material onMaterial;
     public Material offMaterial;
+    float hypotheticalDistanceAwayIfDirectionalLight = float.MaxValue;
 
     private void Awake()
     {
         LightData = GetComponent<Light>();
     }
-    /*
+    
     private void OnEnable()
     {
+        Debug.Log("Enabling light source " + name);
         LightData.enabled = true;
         visual.material = onMaterial;
     }
 
     private void OnDisable()
     {
+        Debug.Log("Disabling light source " + name);
         LightData.enabled = false;
         visual.material = offMaterial;
     }
-    */
+    
     public float HowMuchLightIsHittingThing(Collider[] collidersInThing)
     {
         if (LightData.enabled == false)

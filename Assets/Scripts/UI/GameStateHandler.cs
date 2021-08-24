@@ -15,8 +15,10 @@ public class GameStateHandler : MonoBehaviour
 
     Player player;
 
-    public Canvas headsUpDisplay;
-    public Canvas pauseMenu;
+    public HeadsUpDisplay headsUpDisplay;
+    public Menu pauseMenu;
+    public LevelCompleteScreen winMenu;
+    public LevelFailedScreen gameOverMenu;
     public GameState CurrentState { get; private set; }
 
     private void Awake()
@@ -45,11 +47,13 @@ public class GameStateHandler : MonoBehaviour
         }
     }
 
-    void SwitchWindow(Canvas c)
+    void SwitchWindow(GameObject g)
     {
         headsUpDisplay.gameObject.SetActive(false);
         pauseMenu.gameObject.SetActive(false);
-        c.gameObject.SetActive(true);
+        winMenu.gameObject.SetActive(false);
+        gameOverMenu.gameObject.SetActive(false);
+        g.SetActive(true);
     }
 
     public void PauseGame()
@@ -57,7 +61,7 @@ public class GameStateHandler : MonoBehaviour
         Debug.Log("Pausing game");
         CurrentState = GameState.Paused;
         Time.timeScale = 0;
-        SwitchWindow(pauseMenu);
+        SwitchWindow(pauseMenu.gameObject);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -68,7 +72,26 @@ public class GameStateHandler : MonoBehaviour
         CurrentState = GameState.Playing;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        SwitchWindow(headsUpDisplay);
+        SwitchWindow(headsUpDisplay.gameObject);
         Time.timeScale = 1;
+    }
+
+    public void WinGame()
+    {
+        CurrentState = GameState.HasWon;
+        Time.timeScale = 0;
+        SwitchWindow(winMenu.gameObject);
+        winMenu.Populate(player);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    public void FailGame()
+    {
+        CurrentState = GameState.HasLost;
+        Time.timeScale = 0;
+        SwitchWindow(gameOverMenu.gameObject);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }
